@@ -6,10 +6,11 @@ const idTeam = 'armadillos' // CHANGEME
 
 //Product Constructor
 class Product {
-  constructor(title, price, year) {
+  constructor(title, price, year, id) {
     this.title = title;
     this.price = price;
     this.year = year;
+    this.id = id;
   }
 }
 
@@ -20,7 +21,7 @@ class UI {
     const productList = document.getElementById("product-list");
     const element = document.createElement("div");
     element.innerHTML = `
-      <div class="card text-center mb-4">
+      <div class="card text-center mb-4" data-id="${product.id}">
       <div class="card-body">
       <h5><strong>${product.title}</strong></h5>
       <strong>Price</strong>: ${product.price}€
@@ -38,8 +39,12 @@ class UI {
 
   static deleteProduct(event) {
     console.log("event", event)
-    event.target.closest("div.card.text-center.mb-4").remove();
+    let product = event.target.closest("div.card.text-center.mb-4")
+    product.remove();
+    console.log(event.target.closest("div.card.text-center.mb-4").getAttribute('data-id'))
     UI.showMessage("Product removed successfully", "danger");
+    UI.deleteById(event.target.closest("div.card.text-center.mb-4").getAttribute('data-id'));
+    console.log(event.target)
   }
 
   static showMessage(message, cssClass) {
@@ -73,7 +78,7 @@ class UI {
       if (product.year <= 2021) {
         UI.addProduct(product);
       }
-      
+    console.log(product.id)
     })
     );
     }catch(error){
@@ -96,6 +101,16 @@ class UI {
     }
   }).then(response => response.json())
     .then (res => console.log(res))
+  }
+  static deleteById(id){
+    fetch(`http://ec2-35-181-5-201.eu-west-3.compute.amazonaws.com:8080/delete-product/armadillos/${id}`, {
+    method: "GET",
+    body: null,
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    }
+  })
+
   }
 }
 UI.retreiveAllProductsFromServer()
