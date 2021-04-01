@@ -1,6 +1,8 @@
 // API Url
 const url = 'http://ec2-35-181-5-201.eu-west-3.compute.amazonaws.com:8080'
-const idTeam = 'test' // CHANGEME
+const idTeam = 'armadillos' // CHANGEME
+
+
 
 //Product Constructor
 class Product {
@@ -20,7 +22,7 @@ class UI {
     element.innerHTML = `
       <div class="card text-center mb-4">
       <div class="card-body">
-      <h5><strong>${product.name}</strong></h5>
+      <h5><strong>${product.title}</strong></h5>
       <strong>Price</strong>: ${product.price}€
       <strong>Year</strong>: ${product.year}
       <a href="#" onclick="UI.deleteProduct(event)" class="dlt btn btn-danger ml-5" name="delete">Delete</a>
@@ -59,13 +61,24 @@ class UI {
   }
 
   static retreiveAllProductsFromServer() {
-    fetch(`CHANGAME`, {
+    try{
+    fetch(`http://ec2-35-181-5-201.eu-west-3.compute.amazonaws.com:8080/list-products/armadillos`, {
       method: 'GET', // So, we can specify HTTP Methods here. Uh, interesting.
       headers: { 'Content-Type': 'application/json' }, // Type of data to retrieve. 
       mode: 'cors', // What is CORS?? https://developer.mozilla.org/es/docs/Web/HTTP/CORS 
     })
-  }
+    .then(response => response.json())
+    .then(data => 
+    data.forEach(product => {
+      UI.addProduct(product);
+    })
+    );
+    }catch(error){
+      console.log(`aquí los errores`, error)
+    }
+  } 
 }
+UI.retreiveAllProductsFromServer()
 
 //DOM Events
 document.getElementById("product-form").addEventListener("submit",  e => {
