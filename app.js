@@ -6,8 +6,8 @@ const idTeam = 'armadillos' // CHANGEME
 
 //Product Constructor
 class Product {
-  constructor(name, price, year) {
-    this.name = name;
+  constructor(title, price, year) {
+    this.title = title;
     this.price = price;
     this.year = year;
   }
@@ -70,19 +70,39 @@ class UI {
     .then(response => response.json())
     .then(data => 
     data.forEach(product => {
-      UI.addProduct(product);
+      if (product.year <= 2021) {
+        UI.addProduct(product);
+      }
+      
     })
     );
     }catch(error){
       console.log(`aquí los errores`, error)
     }
   } 
+
+  static postProduct(product) {
+    fetch("http://ec2-35-181-5-201.eu-west-3.compute.amazonaws.com:8080/add-product/armadillos", {
+      
+    // Adding method type
+    method: "POST",
+      
+    // Adding body or contents to send
+    body: JSON.stringify(product),
+      
+    // Adding headers to the request 
+    headers: {
+        "Content-type": "application/json; charset=UTF-8"
+    }
+  }).then(response => response.json())
+    .then (res => console.log(res))
+  }
 }
 UI.retreiveAllProductsFromServer()
 
 //DOM Events
 document.getElementById("product-form").addEventListener("submit",  e => {
-  const name = document.getElementById("product-name").value
+  const title = document.getElementById("product-name").value
   price = document.getElementById("product-price").value
   year = document.getElementById("product-year").value
 
@@ -90,8 +110,9 @@ document.getElementById("product-form").addEventListener("submit",  e => {
 
 
   //Save product
-  const product = new Product(name, price, year);
-
+  
+  const product = new Product(title, price, year);
+  UI.postProduct(product);
   UI.addProduct(product);
   UI.resetForm();
   UI.showMessage("Product added successfully", "success");
